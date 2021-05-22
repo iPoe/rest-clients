@@ -1,0 +1,54 @@
+<template>
+    <div>
+        <v-navigation-drawer :clipped="clipped" v-model="drawer"
+      bottom
+      temporary app dark class="primary lighten-3">
+            <v-list dense>
+                <v-list-item-group>
+                    <v-list-item v-for="(item,i) in items" :key="i">
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon"></v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content v-text="item.text"></v-list-item-content> 
+
+                    </v-list-item>
+                </v-list-item-group>
+
+            </v-list>
+        </v-navigation-drawer>
+
+        
+        <v-toolbar fixed app :clipped-left="clipped">
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="grey--text"></v-app-bar-nav-icon>
+            <v-toolbar-title class="text-uppercase grey--text">
+                <span class="font weight-light">My</span>
+                <span>Orders</span>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn flat color="grey">
+                <span>Sing Out</span>
+                <v-icon right>mdi-logout</v-icon>
+            </v-btn>
+        </v-toolbar>
+        
+        
+    </div>
+    
+</template>
+<script>
+export default {
+    data(){
+        return {
+            drawer: false,
+            clipped: false,
+            items: [
+                { text: 'Real-Time', icon: 'mdi-clock' },
+                { text: 'Audience', icon: 'mdi-account' },
+                { text: 'Conversions', icon: 'mdi-flag' },
+
+            ]
+        }
+    }
+   
+}
+</script>
