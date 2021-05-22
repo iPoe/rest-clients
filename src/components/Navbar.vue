@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-navigation-drawer :clipped="clipped" v-model="drawer"
+        <v-navigation-drawer  v-model="drawer"
       bottom
       temporary app dark class="primary lighten-3">
             <v-list dense>
@@ -18,14 +18,14 @@
         </v-navigation-drawer>
 
         
-        <v-toolbar fixed app :clipped-left="clipped">
+        <v-toolbar >
             <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="grey--text"></v-app-bar-nav-icon>
             <v-toolbar-title class="text-uppercase grey--text">
                 <span class="font weight-light">My</span>
                 <span>Orders</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn flat color="grey">
+            <v-btn  color="grey">
                 <span>Sing Out</span>
                 <v-icon right>mdi-logout</v-icon>
             </v-btn>
