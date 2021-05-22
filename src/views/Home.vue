@@ -4,10 +4,13 @@
     <v-container class="grey lighten-5">
       <v-row justify="start">
         <v-col md ="4" >
+          <Date />
        <v-btn
         color="primary"
         elevation="2"
-      >click me</v-btn>
+      >click me
+      <v-icon right>search</v-icon>
+      </v-btn>
 
         </v-col>
       </v-row>
@@ -31,9 +34,12 @@
 
 <script>
 
-  export default {
-   
+import Date from '@/components/Date.vue'
 
-    
+export default {
+  components:{
+    Date
   }
+      
+}
 </script>
