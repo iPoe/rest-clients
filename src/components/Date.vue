@@ -60,6 +60,7 @@ export default {
       const current = new Date();
       const date2 = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
       console.log(date2)
+      this.$emit('date', this.date)
 
     },
       master(){
@@ -72,11 +73,14 @@ export default {
         const [year, month, day] = date.split('-')
         // return `${month}/${day}/${year}`
         console.log(`${month}/${day}/${year}`)
+        this.$emit('date', this.date);
+
 
       },
 
       fetchClientsbyDate(date){
       const [year, month, day] = date.split('-')
+      this.$emit('date', date);
 
 			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
 				// this.datos = res.data["datos"];
@@ -90,8 +94,10 @@ export default {
 				});
 				console.log(error);
 			});
-		}
+		},
+    
     },
+    
 
     mounted: function(){
       this.currentDate()

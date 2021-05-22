@@ -4,11 +4,11 @@
     <v-container class="grey lighten-5">
       <v-row justify="start">
         <v-col md ="4" >
-          <Date />
+          <Date v-on:date="getDate($event)" />
        <v-btn
         color="primary"
         elevation="2"
-        @click=printdate()
+        @click="printdate()"
       >click me
       <v-icon right>search</v-icon>
       </v-btn>
@@ -38,12 +38,20 @@
 import Date from '@/components/Date.vue'
 
 export default {
+  data(){
+    return{
+      date:null
+    }
+  },
   components:{
     Date
   },
-  meethods:{
+  methods:{
+    getDate(e) {
+      this.date = e
+    },
     printdate(){
-      console.log(Date.$data)
+      console.log(this.date)
     }
   }
       
