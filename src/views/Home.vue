@@ -8,6 +8,7 @@
        <v-btn
         color="primary"
         elevation="2"
+        @click=printdate()
       >click me
       <v-icon right>search</v-icon>
       </v-btn>
@@ -39,6 +40,11 @@ import Date from '@/components/Date.vue'
 export default {
   components:{
     Date
+  },
+  meethods:{
+    printdate(){
+      console.log(Date.$data)
+    }
   }
       
 }

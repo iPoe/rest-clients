@@ -21,6 +21,7 @@
         </template>
         <v-date-picker
           v-model="date"
+          hint="DD/MM/YYYY format"
           no-title
           scrollable
           max = currentDate()
@@ -36,7 +37,7 @@
           <v-btn
             text
             color="primary"
-            @click="$refs.menu.save(date)"
+            @click="$refs.menu.save(date);formatDate(date)"
           >
             OK
           </v-btn>
@@ -48,18 +49,33 @@
 <script>
 
 export default {
-    data: () => ({
+    data: () =>  ({
       date: new Date().toISOString().substr(0, 10),
+      // dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       menu: false,
       cdate: String,
     }),
     methods:{
       currentDate() {
       const current = new Date();
-      const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
-      console.log(date)
-    }
+      const date2 = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+      console.log(date2)
+
     },
+      master(){
+        console.log(this.date)
+        
+      },
+      formatDate (date) {
+        if (!date) return null
+
+        const [year, month, day] = date.split('-')
+        // return `${month}/${day}/${year}`
+        console.log(`${month}/${day}/${year}`)
+
+      },
+    },
+
     mounted: function(){
       this.currentDate()
     }
