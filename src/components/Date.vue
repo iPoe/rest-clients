@@ -24,7 +24,6 @@
           hint="DD/MM/YYYY format"
           no-title
           scrollable
-          max = currentDate()
         >
           <v-spacer></v-spacer>
           <v-btn
@@ -37,7 +36,7 @@
           <v-btn
             text
             color="primary"
-            @click="$refs.menu.save(date);fetchClientsbyDate(date)"
+            @click="$refs.menu.save(date);master()"
           >
             OK
           </v-btn>
@@ -47,7 +46,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
     data: () =>  ({
       date: new Date().toISOString().substr(0, 10),
@@ -60,42 +58,11 @@ export default {
       const current = new Date();
       const date2 = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
       console.log(date2)
-      this.$emit('date', this.date)
 
     },
       master(){
-        console.log(this.date)
-        
-      },
-      formatDate (date) {
-        if (!date) return null
-
-        const [year, month, day] = date.split('-')
-        // return `${month}/${day}/${year}`
-        console.log(`${month}/${day}/${year}`)
-        this.$emit('date', this.date);
-
-
-      },
-
-      fetchClientsbyDate(date){
-      const [year, month, day] = date.split('-')
-      this.$emit('date', date);
-
-			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
-				// this.datos = res.data["datos"];
-                console.log(res.data)
-			}).catch((error) =>{
-				this.$vs.notify({
-					color:'danger',
-					title:'Error updating db',
-					text: error,
-					iconPack: 'feather', icon:'icon-alert-circle'
-				});
-				console.log(error);
-			});
-		},
-    
+        this.$emit('date', this.date)        
+      },   
     },
     
 

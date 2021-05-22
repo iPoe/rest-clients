@@ -8,8 +8,8 @@
        <v-btn
         color="primary"
         elevation="2"
-        @click="printdate()"
-      >click me
+        @click="fetchClientsbyDate(date)"
+      >Search
       <v-icon right>search</v-icon>
       </v-btn>
 
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 import Date from '@/components/Date.vue'
 
 export default {
@@ -52,7 +52,23 @@ export default {
     },
     printdate(){
       console.log(this.date)
-    }
+    },
+    fetchClientsbyDate(date){
+      const [year, month, day] = date.split('-')
+      console.log(this.date)
+			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
+				// this.datos = res.data["datos"];
+        console.log(res.data)
+			}).catch((error) =>{
+				this.$vs.notify({
+					color:'danger',
+					title:'Error updating db',
+					text: error,
+					iconPack: 'feather', icon:'icon-alert-circle'
+				});
+				console.log(error);
+			});
+		}
   }
       
 }
