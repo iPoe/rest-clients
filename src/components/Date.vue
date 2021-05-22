@@ -37,7 +37,7 @@
           <v-btn
             text
             color="primary"
-            @click="$refs.menu.save(date);formatDate(date)"
+            @click="$refs.menu.save(date);fetchClientsbyDate(date)"
           >
             OK
           </v-btn>
@@ -47,13 +47,13 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 export default {
     data: () =>  ({
       date: new Date().toISOString().substr(0, 10),
       // dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       menu: false,
-      cdate: String,
+      datos: null,
     }),
     methods:{
       currentDate() {
@@ -74,6 +74,23 @@ export default {
         console.log(`${month}/${day}/${year}`)
 
       },
+
+      fetchClientsbyDate(date){
+      const [year, month, day] = date.split('-')
+
+			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
+				// this.datos = res.data["datos"];
+                console.log(res.data)
+			}).catch((error) =>{
+				this.$vs.notify({
+					color:'danger',
+					title:'Error updating db',
+					text: error,
+					iconPack: 'feather', icon:'icon-alert-circle'
+				});
+				console.log(error);
+			});
+		}
     },
 
     mounted: function(){
