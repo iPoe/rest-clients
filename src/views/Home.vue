@@ -26,7 +26,7 @@
             dark
             flat
           >
-            <v-toolbar-title>Users List</v-toolbar-title>
+            <v-toolbar-title>CLIENTS</v-toolbar-title>
           </v-toolbar>
           <v-data-table
             :headers="headers"
@@ -43,7 +43,7 @@
 
         </v-col>
         
-        <v-col cols="6">
+        <v-col cols="7">
           <v-card >
             <v-card-text>
          
@@ -83,7 +83,7 @@
             dark
             flat
           >
-            <v-toolbar-title>Users Transactions</v-toolbar-title>
+            <v-toolbar-title> TRANSACTIONS</v-toolbar-title>
           </v-toolbar>
               <v-data-table
               dense
@@ -92,7 +92,10 @@
             :items-per-page="3"
             class="elevation-1"
 
-          > 
+          >
+          <template v-slot:[`item.price`]="{ item }">
+            <span>{{ item.price | toCurrency }}</span>
+          </template>
           </v-data-table>
             </v-col>
             
@@ -168,12 +171,15 @@ export default {
                 "88f9107b",
                 "547606cc"
             ],
-            "Tid": "000060a9a4f8"
+            "Tid": "000060a9a4f8",
+            "price": 1200,
         },
       ],
       Theader:[
         { text: 'Tid', value: 'Tid' },
         { text: 'Products', value: 'ProductIds' },
+        { text: 'Price', value: 'price' },
+
 
       ],
       similarBuyer:[
@@ -258,7 +264,10 @@ export default {
 				console.log(error);
 			});
 
-    }
+    },
+    formatCurrency (value) {
+    return '$' + value / 100
+},
   },
   mounted(){
     this.cargarClientes();
