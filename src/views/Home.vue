@@ -2,21 +2,24 @@
   <div class="dashboard">
     <h1>Sin miedo al exito</h1>
     <v-container class="grey lighten-5">
-      <v-row justify="space-between">
-        <v-col md ="2" align='center'>
-          <Date v-on:date="getDate($event)" />
-       <v-btn
-        color="primary"
-        elevation="2"
-        @click="fetchClientsbyDate(date)"
-      >Search
-      <v-icon right>search</v-icon>
-      </v-btn>
-
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col md ="6" >
+      <v-row >
+        <v-col cols ="6" >
+          <v-row>
+          <v-col cols=3>
+            <Date v-on:date="getDate($event)" />
+            
+          </v-col>
+          <v-col>
+            <v-btn
+              color="primary"
+              elevation="2"
+              @click="fetchClientsbyDate(date)"
+            >Search
+            <v-icon right>search</v-icon>
+            </v-btn>
+          </v-col>
+          </v-row>
+        
         <v-toolbar
             class="mb-2"
             color="indigo darken-5"
@@ -32,7 +35,98 @@
             :sort-by="['name', 'age']"
             class="elevation-1"
             @click:row="handleclick"
-          ></v-data-table>
+            
+          >
+           
+         
+          </v-data-table>
+
+        </v-col>
+        
+        <v-col cols="6">
+          <v-card >
+            <v-card-text>
+         
+          <v-row >
+            <v-col cols=4 >
+          <v-text-field
+            v-model ="currentClient.Cid"
+            label="ID"
+            outlined
+            readonly
+          ></v-text-field>
+          
+        </v-col>
+        <v-col cols=4>
+          <v-text-field
+            v-model ="currentClient.name" 
+            label="Name"
+            outlined
+            readonly
+          ></v-text-field>
+        </v-col>
+        <v-col cols=2>
+          <v-text-field
+            v-model ="currentClient.age"
+            label="Age"
+            outlined
+            readonly
+          ></v-text-field>
+        </v-col>
+
+          </v-row>
+          <v-row>
+            <v-col cols=12>
+              <v-toolbar
+            class="mb-2"
+            color="purple"
+            dark
+            flat
+          >
+            <v-toolbar-title>Users Transactions</v-toolbar-title>
+          </v-toolbar>
+              <v-data-table
+              dense
+            :headers="Theader"
+            :items="Tdata"
+            :items-per-page="3"
+            class="elevation-1"
+
+          > 
+          </v-data-table>
+            </v-col>
+            
+          </v-row>
+          <v-row>
+            <v-sheet
+    class="mx-auto"
+    max-width="500"
+  >
+    <v-slide-group
+      multiple
+      show-arrows
+    >
+      <v-slide-item
+        v-for="n in similarBuyer"
+        :key="n"
+        v-slot="{ active, toggle }"
+      >
+        <v-btn
+          class="mx-2"
+          :input-value="active"
+          active-class="purple white--text"
+          depressed
+          rounded
+          @click="toggle"
+        >
+           {{ n }}
+        </v-btn>
+      </v-slide-item>
+    </v-slide-group>
+  </v-sheet>
+          </v-row>
+            </v-card-text>
+          </v-card>
 
         </v-col>
       </v-row>
@@ -46,10 +140,19 @@
 import axios from 'axios'
 import Date from '@/components/Date.vue'
 
-export default {
+
+export default {  
   data(){
     return{
+      ok:true,
       date:null,
+      currentClient:{
+            Cid: '',
+            name: "",
+            age: '',
+        
+
+      },
       datos:[
         
           {
@@ -57,6 +160,26 @@ export default {
             name: "Leon",
             age: 6,
           },
+      ],
+      Tdata:[
+        {
+            "ProductIds": [
+                "b0944c1f",
+                "88f9107b",
+                "547606cc"
+            ],
+            "Tid": "000060a9a4f8"
+        },
+      ],
+      Theader:[
+        { text: 'Tid', value: 'Tid' },
+        { text: 'Products', value: 'ProductIds' },
+
+      ],
+      similarBuyer:[
+        "Sung",
+        "Urion",
+        "Robson",
       ],
 
       headers:[
@@ -116,8 +239,24 @@ export default {
 			});
 		},
     handleclick(value){
-      console.log(value)
-      this.$router.push('/about')
+      this.currentClient = value
+      this.getClientTransactions(value.Cid)
+      //
+    },
+    getClientTransactions(id){
+      axios.get("http://localhost:9000/clients/"+id).then((res)=>{
+        this.Tdata = res.data["owner"]
+        this.similarBuyer = res.data["simBuyers"]
+        //Hacer el llamado a la función que obtiene la lista de clientes
+			}).catch((error) =>{
+				this.$vs.notify({
+					color:'danger',
+					title:'Error updating db',
+					text: error,
+					iconPack: 'feather', icon:'icon-alert-circle'
+				});
+				console.log(error);
+			});
 
     }
   },

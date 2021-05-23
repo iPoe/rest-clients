@@ -12,7 +12,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
             v-model="date"
-            label="Picker in menu"
+            label="Choose a date"
             prepend-icon="mdi-calendar"
             readonly
             v-bind="attrs"

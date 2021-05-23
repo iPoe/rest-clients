@@ -1,5 +1,21 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>User transaction data </h1>
+    <p> {{uname}}</p>
   </div>
 </template>
+
+
+
+<script>
+
+export default {
+  data(){
+    return{
+      uname : String
+    }
+  },
+  
+  
+}
+</script>
