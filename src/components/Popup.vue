@@ -4,13 +4,11 @@
     <v-container>
           <v-card >
             <v-row>
-            <v-col cols=7>
+            <v-col cols=6>
             <v-toolbar
               color="teal"
               dark
             >
-              <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
               <v-toolbar-title>User Transactions</v-toolbar-title>
 
               <v-spacer></v-spacer>
@@ -49,27 +47,32 @@
           </v-list-group>
         </v-list>
         </v-col>
-         <v-col cols=4>
-      <v-list style="max-height: 150px"
-            class="overflow-y-auto">
-        <v-subheader>Users with same IP</v-subheader>
-        <v-list-item-group
-          color="primary"
-        >
-          <v-list-item
-            v-for="(item, i) in similarBuyer"
-            :key="i"
-          >
-            <v-list-item-icon>
-              <v-icon >face</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text="item"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      </v-col>
+         <v-col cols=3>
+           <v-toolbar
+              color="teal"
+              dark
+            >
+              <v-toolbar-title>Similar Buyers</v-toolbar-title>
+            </v-toolbar>
+            <v-list style="max-height: 250px"
+                  class="overflow-y-auto">
+              <v-list-item-group
+                color="primary"
+              >
+                <v-list-item
+                  v-for="(item, i) in similarBuyer"
+                  :key="i"
+                >
+                  <v-list-item-icon>
+                    <v-icon >face</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-col>
       </v-row>
       </v-card>
       

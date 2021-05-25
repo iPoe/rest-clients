@@ -46,7 +46,6 @@
       <v-row>
         <v-col cols=12>
           <Popup  v-bind:Tdata="Tdata" v-bind:similarBuyer="similarBuyer" />
-
         </v-col>
       </v-row>
     </v-container>
@@ -171,7 +170,7 @@ export default {
       axios.get("http://localhost:9000/clients/"+id).then((res)=>{
         this.Tdata = res.data["owner"]
         this.similarBuyer = res.data["simBuyers"]
-        //Hacer el llamado a la función que obtiene la lista de clientes
+        //Lista de productos recomendados
 			}).catch((error) =>{
 				this.$vs.notify({
 					color:'danger',
