@@ -28,18 +28,26 @@
           >
             <v-toolbar-title>CLIENTS</v-toolbar-title>
           </v-toolbar>
-          <v-data-table
-            :headers="headers"
-            :items="datos"
-            :items-per-page="5"
-            :sort-by="['name', 'age']"
-            class="elevation-1"
-            @click:row="handleclick"
-            
-          >
-           
-         
-          </v-data-table>
+          <v-card>
+            <v-card-title>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-title>
+              <v-data-table
+                :search="search"
+                :headers="headers"
+                :items="datos"
+                :items-per-page="5"
+                class="elevation-1"
+                @click:row="handleclick"            
+              >        
+            </v-data-table>
+          </v-card>
 
         </v-col>
       </v-row>
@@ -64,6 +72,7 @@ export default {
     return{
       ok:true,
       date:null,
+      search: '',
       currentClient:{
             Cid: '',
             name: "",
