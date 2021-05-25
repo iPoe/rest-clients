@@ -45,6 +45,7 @@ func FetchDatabyDate(w http.ResponseWriter, r *http.Request) {
 
 //Simple End-point that updates the db to the current moment
 func UpDb(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	UpdateDb("")
 }
 
@@ -100,8 +101,6 @@ func AddProducts(productlist wParser.Products) {
 }
 
 func inserClients(time string) {
-	// fmt.Println("====Connecting to dgrap====")
-	// fmt.Println("====Parsing clients data====")
 	Clist := wParser.ReadClients("")
 	fmt.Println(len(Clist))
 	op := &api.Operation{} //Falta añadir los esquemas de producto y transaccion

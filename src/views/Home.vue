@@ -73,7 +73,7 @@ export default {
     return{
       ok:true,
       clientName:'',
-      date:new Date().toISOString().substr(0, 10),
+      date:null,
       search: '',
       currentClient:{
             Cid: '',
@@ -161,8 +161,23 @@ export default {
 		},
     fetchClientsbyDate(date){
       const [year, month, day] = date.split('-')
-      console.log(this.date)
 			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
+				// this.datos = res.data["datos"];
+        this.cargarClientes()
+        console.log(res.data)
+        //Hacer el llamado a la función que obtiene la lista de clientes
+			}).catch((error) =>{
+				this.$vs.notify({
+					color:'danger',
+					title:'Error updating db',
+					text: error,
+					iconPack: 'feather', icon:'icon-alert-circle'
+				});
+				console.log(error);
+			});
+		},
+    loadTodayData(){
+			axios.get("http://localhost:9000/").then((res)=>{
 				// this.datos = res.data["datos"];
         this.cargarClientes()
         console.log(res.data)
@@ -205,7 +220,7 @@ export default {
 },
   },
   mounted(){
-    this.cargarClientes();
+    this.loadTodayData()    
   }
       
 }

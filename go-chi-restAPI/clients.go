@@ -186,7 +186,6 @@ func getSimilarBuyers(id string) ([]string, []string) {
 	listaIps := make(map[string]string)
 	var namesxTransaccion []string
 	var Products []string
-
 	for i := range ips {
 		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps)
 		namesxTransaccion = append(namesxTransaccion, tnames...)
@@ -194,7 +193,7 @@ func getSimilarBuyers(id string) ([]string, []string) {
 
 	}
 	namesNotDup := RemoveDuplicateValues(namesxTransaccion, id)
-	Productnames := preferedProducts(Products)
+	Productnames := preferedProducts(Products, len(Products))
 
 	return namesNotDup, Productnames
 
@@ -296,7 +295,7 @@ func Idtoname(plist []string) []string {
 	return ans
 }
 
-func preferedProducts(plist []string) []string {
+func preferedProducts(plist []string, total int) []string {
 	keys := make(map[string]int)
 	list := []string{}
 	// If the key(values of the slice) is not equal
@@ -310,9 +309,23 @@ func preferedProducts(plist []string) []string {
 			keys[entry] = 1
 		}
 	}
+	min := float64(keys[plist[0]]) / float64(total)
+	max := float64(keys[plist[0]]) / float64(total)
 
+	for _, element := range keys {
+		if (float64(element) / float64(total)) > max {
+			max = float64(element) / float64(total)
+		}
+		if (float64(element) / float64(total)) < min {
+			min = float64(element) / float64(total)
+
+		}
+	}
+	taux := max - min
+	thresh := taux * float64(0.75)
 	for key, element := range keys {
-		if element > 8 {
+		p := float64(element) / float64(total)
+		if p >= thresh {
 			list = append(list, m[key].Name)
 		}
 	}
