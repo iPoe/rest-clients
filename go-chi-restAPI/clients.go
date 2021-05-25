@@ -187,26 +187,28 @@ func getSimilarBuyers(id string) ([]string, []string) {
 	var namesxTransaccion []string
 	var Products []string
 	for i := range ips {
-		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps)
+		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps,id)
 		namesxTransaccion = append(namesxTransaccion, tnames...)
 		Products = append(Products, pnames...)
 
 	}
 	namesNotDup := RemoveDuplicateValues(namesxTransaccion, id)
-	Productnames := preferedProducts(Products, len(Products))
+	Productnames := preferedProducts(Products,len(Products))
 
 	return namesNotDup, Productnames
 
 }
 
 //Returns the names of users that used the same Ip address
-func getNamesxTransact(ipaddress string, list map[string]string) ([]string, []string) {
+func getNamesxTransact(ipaddress string, list map[string]string,id string) ([]string, []string) {
 	// Given an Ip address it returns a list
 	// with all the names that used that ip
 	list["$a"] = ipaddress
+	list["$o"] = id
 
-	q := `query tran($a:string){
-		tran(func:type(Transaction))@filter(eq(Ip,$a)){
+
+	q := `query tran($a:string,$o:string){
+		tran(func:type(Transaction))@filter(NOT eq(Cid,$o) AND eq(Ip,$a)){
 			CC as Cid
 			Ip
 			ProductIds
@@ -295,7 +297,7 @@ func Idtoname(plist []string) []string {
 	return ans
 }
 
-func preferedProducts(plist []string, total int) []string {
+func preferedProducts(plist []string,total int) []string {
 	keys := make(map[string]int)
 	list := []string{}
 	// If the key(values of the slice) is not equal
@@ -309,23 +311,23 @@ func preferedProducts(plist []string, total int) []string {
 			keys[entry] = 1
 		}
 	}
-	min := float64(keys[plist[0]]) / float64(total)
-	max := float64(keys[plist[0]]) / float64(total)
+	min := float64(keys[plist[0]])/float64(total)
+	max := float64(keys[plist[0]])/float64(total)
 
 	for _, element := range keys {
-		if (float64(element) / float64(total)) > max {
-			max = float64(element) / float64(total)
+		if (float64(element)/float64(total))>max{
+			max = float64(element)/float64(total)
 		}
-		if (float64(element) / float64(total)) < min {
-			min = float64(element) / float64(total)
+		if (float64(element)/float64(total))<min{
+			min = float64(element)/float64(total)
 
 		}
 	}
 	taux := max - min
-	thresh := taux * float64(0.75)
+	thresh := taux*float64(0.75)
 	for key, element := range keys {
-		p := float64(element) / float64(total)
-		if p >= thresh {
+		p := float64(element)/float64(total)
+		if p >= thresh  {
 			list = append(list, m[key].Name)
 		}
 	}
