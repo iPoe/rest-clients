@@ -42,99 +42,13 @@
           </v-data-table>
 
         </v-col>
-        
-        <v-col cols="7">
-          <v-card >
-            <v-card-text>
-         
-          <v-row >
-            <v-col cols=4 >
-          <v-text-field
-            v-model ="currentClient.Cid"
-            label="ID"
-            outlined
-            readonly
-          ></v-text-field>
-          
-        </v-col>
-        <v-col cols=4>
-          <v-text-field
-            v-model ="currentClient.name" 
-            label="Name"
-            outlined
-            readonly
-          ></v-text-field>
-        </v-col>
-        <v-col cols=2>
-          <v-text-field
-            v-model ="currentClient.age"
-            label="Age"
-            outlined
-            readonly
-          ></v-text-field>
-        </v-col>
-
-          </v-row>
-          <v-row>
-            <v-col cols=12>
-              <v-toolbar
-            class="mb-2"
-            color="purple"
-            dark
-            flat
-          >
-            <v-toolbar-title> TRANSACTIONS</v-toolbar-title>
-          </v-toolbar>
-              <v-data-table
-              dense
-            :headers="Theader"
-            :items="Tdata"
-            :items-per-page="3"
-            class="elevation-1"
-
-          >
-          <template v-slot:[`item.price`]="{ item }">
-            <span>{{ item.price | toCurrency }}</span>
-          </template>
-          </v-data-table>
-            </v-col>
-            
-          </v-row>
-          <v-row>
-            <v-sheet
-    class="mx-auto"
-    max-width="500"
-  >
-    <v-slide-group
-      multiple
-      show-arrows
-    >
-      <v-slide-item
-        v-for="n in similarBuyer"
-        :key="n"
-        v-slot="{ active, toggle }"
-      >
-        <v-btn
-          class="mx-2"
-          :input-value="active"
-          active-class="purple white--text"
-          depressed
-          rounded
-          @click="toggle"
-        >
-           {{ n }}
-        </v-btn>
-      </v-slide-item>
-    </v-slide-group>
-  </v-sheet>
-          </v-row>
-            </v-card-text>
-          </v-card>
+      </v-row>
+      <v-row>
+        <v-col cols=12>
+          <Popup  v-bind:Tdata="Tdata" v-bind:similarBuyer="similarBuyer" />
 
         </v-col>
       </v-row>
-      
-
     </v-container>
   </div>
 </template>
@@ -142,6 +56,8 @@
 <script>
 import axios from 'axios'
 import Date from '@/components/Date.vue'
+import Popup from '../components/Popup.vue'
+
 
 
 export default {  
@@ -176,9 +92,9 @@ export default {
         },
       ],
       Theader:[
-        { text: 'Tid', value: 'Tid' },
+        { text: 'Transaction No', value: 'Tid' },
         { text: 'Products', value: 'ProductIds' },
-        { text: 'Price', value: 'price' },
+        { text: 'TOTAL', value: 'price' },
 
 
       ],
@@ -202,9 +118,11 @@ export default {
     }
   },
   components:{
-    Date
+    Date,
+    Popup
   },
-  methods:{
+  
+    methods:{
     getDate(e) {
       this.date = e
     },
