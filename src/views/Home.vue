@@ -73,7 +73,7 @@ export default {
     return{
       ok:true,
       clientName:'',
-      date:null,
+      date:new Date().toISOString().substr(0, 10),
       search: '',
       currentClient:{
             Cid: '',
