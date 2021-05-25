@@ -25,7 +25,7 @@ type Person struct {
 	DType []string `json:"dgraph.type,omitempty"`
 }
 
-var m = make(map[string]int)
+var m = make(map[string]wParser.Product)
 
 //End-point that allows user send a date and then update the db data by that date
 func FetchDatabyDate(w http.ResponseWriter, r *http.Request) {
@@ -79,9 +79,10 @@ var dg = newClient()
 var ctx = context.Background()
 
 func AddProducts(productlist wParser.Products) {
-	m = make(map[string]int)
-	for i:= range productlist{
-		m[productlist[i].Id] = productlist[i].Price
+	// var m = make(map[string]interface{})
+
+	for i := range productlist {
+		m[productlist[i].Id] = productlist[i]
 	}
 	mu := &api.Mutation{
 		CommitNow: true,

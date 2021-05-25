@@ -53,7 +53,8 @@
       </v-row>
       <v-row>
         <v-col cols=12>
-          <Popup  v-bind:Tdata="Tdata" v-bind:similarBuyer="similarBuyer" />
+          <Popup  v-bind:Tdata="Tdata" v-bind:similarBuyer="similarBuyer" v-bind:clientName="clientName"
+          v-bind:favoriteProducts="favoriteProducts" />
         </v-col>
       </v-row>
     </v-container>
@@ -71,6 +72,7 @@ export default {
   data(){
     return{
       ok:true,
+      clientName:'',
       date:null,
       search: '',
       currentClient:{
@@ -111,6 +113,11 @@ export default {
         "Urion",
         "Robson",
       ],
+      favoriteProducts:[
+        "Apple",
+        "Onion",
+        "Changua",
+      ],
 
       headers:[
         {
@@ -139,9 +146,9 @@ export default {
     },
     
     cargarClientes(){
-			axios.get("http://localhost:9000/clients").then((res)=>{
+			axios.get("http://localhost:9000/clients/").then((res)=>{
 				this.datos = res.data["datos"];
-                // console.log(this.datos)
+        console.log("ping")
 			}).catch((error) =>{
 				this.$vs.notify({
 					color:'danger',
@@ -172,6 +179,7 @@ export default {
 		},
     handleclick(value){
       this.currentClient = value
+      this.clientName = value.name
       this.getClientTransactions(value.Cid)
       //
     },
@@ -179,6 +187,7 @@ export default {
       axios.get("http://localhost:9000/clients/"+id).then((res)=>{
         this.Tdata = res.data["owner"]
         this.similarBuyer = res.data["simBuyers"]
+        this.favoriteProducts = res.data["favProducts"]
         //Lista de productos recomendados
 			}).catch((error) =>{
 				this.$vs.notify({

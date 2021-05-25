@@ -34,8 +34,9 @@ type IpArray struct {
 }
 type MyData struct {
 	Tran []struct {
-		Cid string `json:"Cid"`
-		IP  string `json:"Ip"`
+		Cid        string   `json:"Cid"`
+		IP         string   `json:"Ip"`
+		ProductIds []string `json:"ProductIds"`
 	} `json:"tran"`
 	Tran2 []struct {
 		Name string `json:"name"`
@@ -45,9 +46,7 @@ type PidArray struct {
 	Array []struct {
 		ProductIds []string `json:"ProductIds"`
 		Tid        string   `json:"Tid"`
-		Price        int   `json:"price"`
-
-
+		Price      int      `json:"price"`
 	} `json:"owner"`
 }
 
@@ -110,7 +109,10 @@ func (rs clientsResource) Get(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m["simBuyers"] = getSimilarBuyers(id)
+	simbuyers, favPlist := getSimilarBuyers(id)
+	m["simBuyers"] = simbuyers
+	m["favProducts"] = favPlist
+
 	// fmt.Println(m["simBuyers"])
 	newData, err := json.Marshal(m)
 	respByte := bytes.NewReader(newData)
@@ -139,7 +141,7 @@ func AuxOwnerName(id string) string {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(len(r.Owner))
+	fmt.Println("FLAG", (r.Owner))
 	ans := r.Owner[0].Name
 	return ans
 }
@@ -163,7 +165,7 @@ func RemoveDuplicateValues(StringSlice []string, id string) []string {
 	return list
 }
 
-func getSimilarBuyers(id string) []string {
+func getSimilarBuyers(id string) ([]string, []string) {
 	list := make(map[string]string)
 	list["$a"] = id
 	q := `query tran($a:string){
@@ -183,17 +185,23 @@ func getSimilarBuyers(id string) []string {
 
 	listaIps := make(map[string]string)
 	var namesxTransaccion []string
+	var Products []string
+
 	for i := range ips {
-		namesxTransaccion = append(namesxTransaccion, getNamesxTransact(ips[i].IP, listaIps)...)
+		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps)
+		namesxTransaccion = append(namesxTransaccion, tnames...)
+		Products = append(Products, pnames...)
 
 	}
 	namesNotDup := RemoveDuplicateValues(namesxTransaccion, id)
-	return namesNotDup
+	Productnames := preferedProducts(Products)
+
+	return namesNotDup, Productnames
 
 }
 
 //Returns the names of users that used the same Ip address
-func getNamesxTransact(ipaddress string, list map[string]string) []string {
+func getNamesxTransact(ipaddress string, list map[string]string) ([]string, []string) {
 	// Given an Ip address it returns a list
 	// with all the names that used that ip
 	list["$a"] = ipaddress
@@ -202,6 +210,7 @@ func getNamesxTransact(ipaddress string, list map[string]string) []string {
 		tran(func:type(Transaction))@filter(eq(Ip,$a)){
 			CC as Cid
 			Ip
+			ProductIds
 	   } 
 		tran2(func:eq(Cid,val(CC))){
 			name
@@ -221,12 +230,19 @@ func getNamesxTransact(ipaddress string, list map[string]string) []string {
 		log.Fatal(err)
 	}
 	n := r2.Tran2
-	// fmt.Println(n)
+	transactlist := r2.Tran
+
 	var res []string
 	for i := range n {
 		res = append(res, n[i].Name)
 	}
-	return res
+
+	var ans []string
+	for i := range transactlist {
+		ans = append(ans, transactlist[i].ProductIds...)
+	}
+	// fmt.Println(len(Productnames))
+	return res, ans
 
 }
 
@@ -246,26 +262,60 @@ func getClientOrders(id string) []byte {
 	}
 	var r PidArray
 	err = json.Unmarshal(resp.Json, &r)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	//fmt.Println(r)
 	//orders := r.Array
-	for j := range r.Array{
+	for j := range r.Array {
 		r.Array[j].Price = getOrderPrice(r.Array[j].ProductIds)
+		temp := Idtoname(r.Array[j].ProductIds)
+		r.Array[j].ProductIds = temp
 	}
-	ans,err := json.Marshal(r)
-	if err != nil{
+	ans, err := json.Marshal(r)
+	if err != nil {
 		log.Fatal(err)
 	}
 	return ans
 
 }
 
-func getOrderPrice(plist []string) int{
+func getOrderPrice(plist []string) int {
 	ans := 0
 	for i := range plist {
-		ans = ans + m[plist[i]]
+		ans = ans + m[plist[i]].Price
 	}
 	return ans
+}
+
+func Idtoname(plist []string) []string {
+	var ans []string
+	for i := range plist {
+		ans = append(ans, m[plist[i]].Name)
+	}
+	return ans
+}
+
+func preferedProducts(plist []string) []string {
+	keys := make(map[string]int)
+	list := []string{}
+	// If the key(values of the slice) is not equal
+	// to the already present value in new slice (list)
+	// then we append it. else we jump on another element.
+	for _, entry := range plist {
+		_, value := keys[entry]
+		if value {
+			keys[entry] += 1
+		} else {
+			keys[entry] = 1
+		}
+	}
+
+	for key, element := range keys {
+		if element > 8 {
+			list = append(list, m[key].Name)
+		}
+	}
+
+	return list
 }

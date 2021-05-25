@@ -9,7 +9,7 @@
               color="teal"
               dark
             >
-              <v-toolbar-title>User Transactions</v-toolbar-title>
+              <v-toolbar-title>{{clientName}} Transactions</v-toolbar-title>
 
               <v-spacer></v-spacer>
 
@@ -52,7 +52,7 @@
               color="teal"
               dark
             >
-              <v-toolbar-title>Similar Buyers</v-toolbar-title>
+              <v-toolbar-title>Near Buyers</v-toolbar-title>
             </v-toolbar>
             <v-list style="max-height: 250px"
                   class="overflow-y-auto">
@@ -73,17 +73,46 @@
               </v-list-item-group>
             </v-list>
           </v-col>
+          <v-col cols=3>
+           <v-toolbar
+              color="teal"
+              dark
+            >
+              <v-toolbar-title>You may also like:</v-toolbar-title>
+            </v-toolbar>
+            <v-list style="max-height: 250px"
+                  class="overflow-y-auto">
+              <v-list-item-group
+                color="primary"
+              >
+                <v-list-item
+                  v-for="(item, i) in favoriteProducts"
+                  :key="i"
+                >
+                  <v-list-item-icon>
+                    <v-icon >label</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-col>
       </v-row>
       </v-card>
       
 
     </v-container>
 
-      <v-card-actions>  
-        <v-icon>email</v-icon>
-        <v-spacer />
-        <v-btn color="blue lighten-3">I'm fake</v-btn>
-      </v-card-actions>
+      <v-footer dark padless>
+    <v-col
+      class="text-center"
+      cols="12"
+    >
+      {{ new Date().getFullYear() }} — <strong>Vuetify</strong>
+    </v-col>
+  </v-footer>
       
     </v-card>
    
@@ -94,7 +123,7 @@
 <script>
 //Montar el bus y recibir la info
 export default {
-  props:['Tdata','similarBuyer'],
+  props:['Tdata','similarBuyer','favoriteProducts','clientName'],
     data () {
       return {
       Theader:[
