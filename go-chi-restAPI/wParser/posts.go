@@ -5,10 +5,28 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
+
+var buyersUrl string
+var producstUrl string
+var transactionssUrl string
+
+func init() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		fmt.Println("error loading .env file")
+	}
+	buyersUrl = os.Getenv("BUYERS_URL")
+	producstUrl = os.Getenv("PRODUCTS_URL")
+	transactionssUrl = os.Getenv("TRANSACTIONS_URL")
+}
 
 type Client struct {
 	Id   string `json:"id"`
@@ -57,7 +75,7 @@ func GetBody(date, url string) []byte {
 
 func ReadClients(date string) Clients {
 	var clientList Clients
-	body := GetBody(date, "https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/buyers")
+	body := GetBody(date, buyersUrl)
 	err := json.Unmarshal(body, &clientList)
 	if err != nil {
 		panic(err)
@@ -67,7 +85,7 @@ func ReadClients(date string) Clients {
 
 func ReadProducts(date string) Products {
 	var productsList Products
-	body := GetBody(date, "https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/products")
+	body := GetBody(date, producstUrl)
 	responseString := string(body)
 	pList := strings.Split(responseString, "\n")
 	fmt.Println(len(pList))
@@ -93,7 +111,7 @@ func ReadProducts(date string) Products {
 
 func ReadTransactions(date string) Transactions {
 	var transactionList Transactions
-	body := GetBody(date, "https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/transactions")
+	body := GetBody(date, transactionssUrl)
 	responseString := string(body)
 	tmplist := strings.Split(responseString, "#")
 
