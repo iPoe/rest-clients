@@ -1,8 +1,5 @@
 package main
 
-//Emigrar en este paquete los endpoints encargados de responder con la
-//info de los clientes
-
 import (
 	"bytes"
 	"context"
@@ -13,7 +10,6 @@ import (
 	"log"
 	"net/http"
 
-	//"github.com/dgraph-io/dgo/v200/protos/api"
 	"github.com/go-chi/chi"
 )
 
@@ -52,6 +48,7 @@ type PidArray struct {
 
 type clientsResource struct{}
 
+//This function is used to mount the new routes
 func (rs clientsResource) Routes() chi.Router {
 
 	r := chi.NewRouter()
@@ -98,6 +95,7 @@ func PostCtx(next http.Handler) http.Handler {
 	})
 }
 
+//Given an user ID return its transactions, similarbuyers and recommended products
 func (rs clientsResource) Get(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value("id").(string)
 	fmt.Println(id)
@@ -124,6 +122,7 @@ func (rs clientsResource) Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//Get the name of an user given its ID
 func AuxOwnerName(id string) string {
 	list := make(map[string]string)
 	list["$a"] = id
@@ -146,6 +145,7 @@ func AuxOwnerName(id string) string {
 	return ans
 }
 
+//Given a list of strings it removes the duplicate values
 func RemoveDuplicateValues(StringSlice []string, id string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
@@ -165,6 +165,8 @@ func RemoveDuplicateValues(StringSlice []string, id string) []string {
 	return list
 }
 
+//Given an user id the func returns the list of names of users that share
+//the same ip addres of that user and also return a list of recommended products
 func getSimilarBuyers(id string) ([]string, []string) {
 	list := make(map[string]string)
 	list["$a"] = id
@@ -187,25 +189,24 @@ func getSimilarBuyers(id string) ([]string, []string) {
 	var namesxTransaccion []string
 	var Products []string
 	for i := range ips {
-		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps,id)
+		tnames, pnames := getNamesxTransact(ips[i].IP, listaIps, id)
 		namesxTransaccion = append(namesxTransaccion, tnames...)
 		Products = append(Products, pnames...)
 
 	}
 	namesNotDup := RemoveDuplicateValues(namesxTransaccion, id)
-	Productnames := preferedProducts(Products,len(Products))
+	Productnames := preferedProducts(Products, len(Products))
 
 	return namesNotDup, Productnames
 
 }
 
 //Returns the names of users that used the same Ip address
-func getNamesxTransact(ipaddress string, list map[string]string,id string) ([]string, []string) {
+func getNamesxTransact(ipaddress string, list map[string]string, id string) ([]string, []string) {
 	// Given an Ip address it returns a list
 	// with all the names that used that ip
-	list["$a"] = ipaddress
+	list["$a"] = ipaddress //excluding the user identified with "id"
 	list["$o"] = id
-
 
 	q := `query tran($a:string,$o:string){
 		tran(func:type(Transaction))@filter(NOT eq(Cid,$o) AND eq(Ip,$a)){
@@ -247,6 +248,7 @@ func getNamesxTransact(ipaddress string, list map[string]string,id string) ([]st
 
 }
 
+// Given and ID a query is executed on the db and returns all the clients transactions
 func getClientOrders(id string) []byte {
 	list := make(map[string]string)
 	list["$a"] = id
@@ -297,7 +299,7 @@ func Idtoname(plist []string) []string {
 	return ans
 }
 
-func preferedProducts(plist []string,total int) []string {
+func preferedProducts(plist []string, total int) []string {
 	keys := make(map[string]int)
 	list := []string{}
 	// If the key(values of the slice) is not equal
@@ -311,23 +313,23 @@ func preferedProducts(plist []string,total int) []string {
 			keys[entry] = 1
 		}
 	}
-	min := float64(keys[plist[0]])/float64(total)
-	max := float64(keys[plist[0]])/float64(total)
+	min := float64(keys[plist[0]]) / float64(total)
+	max := float64(keys[plist[0]]) / float64(total)
 
 	for _, element := range keys {
-		if (float64(element)/float64(total))>max{
-			max = float64(element)/float64(total)
+		if (float64(element) / float64(total)) > max {
+			max = float64(element) / float64(total)
 		}
-		if (float64(element)/float64(total))<min{
-			min = float64(element)/float64(total)
+		if (float64(element) / float64(total)) < min {
+			min = float64(element) / float64(total)
 
 		}
 	}
 	taux := max - min
-	thresh := taux*float64(0.75)
+	thresh := taux * float64(0.75)
 	for key, element := range keys {
-		p := float64(element)/float64(total)
-		if p >= thresh  {
+		p := float64(element) / float64(total)
+		if p >= thresh {
 			list = append(list, m[key].Name)
 		}
 	}
