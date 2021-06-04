@@ -1,7 +1,31 @@
 <template>
   <div class="dashboard">
     <h1>Sin miedo al exito</h1>
+    <div v-if="!loading">
     <v-container class="grey lighten-5">
+      <v-dialog
+      v-model="dialogerror"
+      persistent
+      max-width="290"
+      >
+        
+        <v-card>
+          <v-card-title class="text-h5">
+            Date not picked
+          </v-card-title>
+          <v-card-text>Click the calendar and pick a date</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="dialogerror = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>     
       <v-row >
         <v-col cols ="6" >
           <v-row>
@@ -13,7 +37,7 @@
             <v-btn
               color="primary"
               elevation="2"
-              @click="fetchClientsbyDate(date)"
+              @click="fetchClientsbyDate(date);"
             >Search
             <v-icon right>search</v-icon>
             </v-btn>
@@ -52,12 +76,40 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols=12>
+        <div v-if="clientRecords">
+        <v-col >
           <Popup  v-bind:Tdata="Tdata" v-bind:similarBuyer="similarBuyer" v-bind:clientName="clientName"
           v-bind:favoriteProducts="favoriteProducts" />
         </v-col>
-      </v-row>
+        </div>
+        <div v-else-if="clientHasNoRecords">
+        <v-col >
+          <h2>Cant find any records for that user</h2>
+        </v-col>
+        </div>
+        <div v-else>          
+          <h2> Fetching client data</h2>
+        </div>
+      </v-row>      
     </v-container>
+    </div>
+    <div v-else >
+      <h2> Loading data....</h2>
+      <content-loader
+      viewBox="0 0 476 124"
+      primaryColor="#f3f3f3"
+      secondaryColor="#cccccc"
+    >
+      <rect x="48" y="8" rx="3" ry="3" width="88" height="6" />
+      <rect x="48" y="26" rx="3" ry="3" width="52" height="6" />
+      <rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
+      <rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
+      <rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
+      <circle cx="20" cy="20" r="20" />
+    </content-loader>
+    
+     
+    </div>
   </div>
 </template>
 
@@ -65,6 +117,8 @@
 import axios from 'axios'
 import Date from '@/components/Date.vue'
 import Popup from '../components/Popup.vue'
+import { ContentLoader } from "vue-content-loader";
+
 
 
 
@@ -72,6 +126,10 @@ export default {
   data(){
     return{
       ok:true,
+      clientRecords:false,
+      dialogerror:false,
+      clientHasNoRecords:false,
+      loading:true,
       clientName:'',
       date:null,
       search: '',
@@ -82,25 +140,8 @@ export default {
         
 
       },
-      datos:[
-        
-          {
-            Cid: '12',
-            name: "Leon",
-            age: 6,
-          },
-      ],
-      Tdata:[
-        {
-            "ProductIds": [
-                "b0944c1f",
-                "88f9107b",
-                "547606cc"
-            ],
-            "Tid": "000060a9a4f8",
-            "price": 1200,
-        },
-      ],
+      datos:null,
+      Tdata:null,
       Theader:[
         { text: 'Transaction No', value: 'Tid' },
         { text: 'Products', value: 'ProductIds' },
@@ -108,16 +149,8 @@ export default {
 
 
       ],
-      similarBuyer:[
-        "Sung",
-        "Urion",
-        "Robson",
-      ],
-      favoriteProducts:[
-        "Apple",
-        "Onion",
-        "Changua",
-      ],
+      similarBuyer:null,
+      favoriteProducts:null,
 
       headers:[
         {
@@ -134,6 +167,7 @@ export default {
   },
   components:{
     Date,
+    ContentLoader,
     Popup
   },
   
@@ -146,8 +180,10 @@ export default {
     },
     
     cargarClientes(){
-			axios.get("http://localhost:9000/clients/").then((res)=>{
+      this.loading = true
+			axios.get(process.env.VUE_APP_API_URLCLIENTS).then((res)=>{
 				this.datos = res.data["datos"];
+        this.loading = false
         console.log("ping")
 			}).catch((error) =>{
 				this.$vs.notify({
@@ -160,12 +196,16 @@ export default {
 			});
 		},
     fetchClientsbyDate(date){
+      if (this.date==null) {
+          this.dialogerror = true
+          return
+
+        }
       const [year, month, day] = date.split('-')
-			axios.get("http://localhost:9000/data/?date="+`${month}/${day}/${year}`).then((res)=>{
-				// this.datos = res.data["datos"];
+      this.loading = true
+			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`).then((res)=>{
         this.cargarClientes()
         console.log(res.data)
-        //Hacer el llamado a la función que obtiene la lista de clientes
 			}).catch((error) =>{
 				this.$vs.notify({
 					color:'danger',
@@ -177,11 +217,9 @@ export default {
 			});
 		},
     loadTodayData(){
-			axios.get("http://localhost:9000/").then((res)=>{
-				// this.datos = res.data["datos"];
+			axios.get(process.env.VUE_APP_API_URL_LOAD_TODAY_DATA).then((res)=>{
         this.cargarClientes()
         console.log(res.data)
-        //Hacer el llamado a la función que obtiene la lista de clientes
 			}).catch((error) =>{
 				this.$vs.notify({
 					color:'danger',
@@ -199,19 +237,20 @@ export default {
       //
     },
     getClientTransactions(id){
-      axios.get("http://localhost:9000/clients/"+id).then((res)=>{
+      this.clientRecords = false
+      this.clientHasNoRecords = false
+      axios.get(process.env.VUE_APP_API_URLCLIENTS+id).then((res)=>{
+        
+        this.clientRecords = true
         this.Tdata = res.data["owner"]
         this.similarBuyer = res.data["simBuyers"]
         this.favoriteProducts = res.data["favProducts"]
-        //Lista de productos recomendados
 			}).catch((error) =>{
-				this.$vs.notify({
-					color:'danger',
-					title:'Error updating db',
-					text: error,
-					iconPack: 'feather', icon:'icon-alert-circle'
-				});
-				console.log(error);
+        this.clientRecords = false
+        this.clientHasNoRecords = true
+        this.Tdata = null
+        console.log(error)
+				
 			});
 
     },
