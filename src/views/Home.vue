@@ -50,7 +50,7 @@
             dark
             flat
           >
-            <v-toolbar-title>CLIENTS</v-toolbar-title>
+            <v-toolbar-title>Clients List</v-toolbar-title>
           </v-toolbar>
           <v-card>
             <v-card-title>
