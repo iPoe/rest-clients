@@ -197,6 +197,7 @@ export default {
 		},
     fetchClientsbyDate(date){
       if (this.date==null) {
+          this.errordetail = "No date was selected"
           this.dialogerror = true
           return
 
@@ -210,7 +211,7 @@ export default {
       
       const [year, month, day] = date.split('-')
       this.loading = true
-			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`,{params:{date:this.date}}).then((res)=>{
+			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`,{params:{datep:this.date}}).then((res)=>{
         this.cargarClientes()
         console.log(res.data)
 			}).catch((error) =>{
