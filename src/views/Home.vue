@@ -196,32 +196,26 @@ export default {
 			});
 		},
     fetchClientsbyDate(date){
-      if (this.date==null) {
+      if (date==null) {
           this.errordetail = "No date was selected"
           this.dialogerror = true
           return
 
         }
       var date_regex = /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/;
-      if (!(date_regex.test(this.date))) {
+      if (!(date_regex.test(date))) {
           this.dialogerror = true
           this.errordetail = "Date format not valid"
           return
       }
-      
-      const [year, month, day] = date.split('-')
       this.loading = true
-			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`,{params:{datep:this.date}}).then((res)=>{
+      console.log(date)
+			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE,{params:{date:date}}).then((res)=>{
         this.cargarClientes()
         console.log(res.data)
 			}).catch((error) =>{
-				this.$vs.notify({
-					color:'danger',
-					title:'Error updating db',
-					text: error,
-					iconPack: 'feather', icon:'icon-alert-circle'
-				});
-				console.log(error);
+				this.dialogerror = true
+        this.errordetail = error
 			});
 		},
     loadTodayData(){
