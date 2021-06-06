@@ -11,9 +11,9 @@
         
         <v-card>
           <v-card-title class="text-h5">
-            Date not picked
+            Date Error
           </v-card-title>
-          <v-card-text>Click the calendar and pick a date</v-card-text>
+          <v-card-text >error: {{errordetail}}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
@@ -121,11 +121,11 @@ import { ContentLoader } from "vue-content-loader";
 
 
 
-
 export default {  
   data(){
     return{
       ok:true,
+      errordetail:null,
       clientRecords:false,
       dialogerror:false,
       clientHasNoRecords:false,
@@ -201,9 +201,16 @@ export default {
           return
 
         }
+      var date_regex = /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/;
+      if (!(date_regex.test(this.date))) {
+          this.dialogerror = true
+          this.errordetail = "Date format not valid"
+          return
+      }
+      
       const [year, month, day] = date.split('-')
       this.loading = true
-			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`).then((res)=>{
+			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE+`${month}/${day}/${year}`,{params:{date:this.date}}).then((res)=>{
         this.cargarClientes()
         console.log(res.data)
 			}).catch((error) =>{
