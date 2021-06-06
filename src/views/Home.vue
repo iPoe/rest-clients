@@ -186,13 +186,9 @@ export default {
         this.loading = false
         console.log("ping")
 			}).catch((error) =>{
-				this.$vs.notify({
-					color:'danger',
-					title:'Error al cargar los clientes',
-					text: error,
-					iconPack: 'feather', icon:'icon-alert-circle'
-				});
-				console.log(error);
+        this.dialogerror = true
+        this.errordetail = error
+				
 			});
 		},
     fetchClientsbyDate(date){
@@ -218,20 +214,7 @@ export default {
         this.errordetail = error
 			});
 		},
-    loadTodayData(){
-			axios.get(process.env.VUE_APP_API_URL_LOAD_TODAY_DATA).then((res)=>{
-        this.cargarClientes()
-        console.log(res.data)
-			}).catch((error) =>{
-				this.$vs.notify({
-					color:'danger',
-					title:'Error updating db',
-					text: error,
-					iconPack: 'feather', icon:'icon-alert-circle'
-				});
-				console.log(error);
-			});
-		},
+    
     handleclick(value){
       this.currentClient = value
       this.clientName = value.name
@@ -261,7 +244,7 @@ export default {
 },
   },
   mounted(){
-    this.loadTodayData()    
+    this.cargarClientes()    
   }
       
 }
