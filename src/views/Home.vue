@@ -231,6 +231,8 @@ export default {
         this.similarBuyer = res.data["simBuyers"]
         this.favoriteProducts = res.data["favProducts"]
 			}).catch((error) =>{
+        this.dialogerror = true
+        this.errordetail = "Client doesn't have transactions"
         this.clientRecords = false
         this.clientHasNoRecords = true
         this.Tdata = null
