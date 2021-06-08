@@ -184,7 +184,6 @@ export default {
 			axios.get(process.env.VUE_APP_API_URLCLIENTS).then((res)=>{
 				this.datos = res.data["datos"];
         this.loading = false
-        console.log("ping")
 			}).catch((error) =>{
         this.dialogerror = true
         this.errordetail = error
@@ -206,9 +205,8 @@ export default {
       }
       this.loading = true
       console.log(date)
-			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE,{params:{date:date}}).then((res)=>{
+			axios.get(process.env.VUE_APP_API_URL_LOAD_DATA_BY_DATE,{params:{date:date}}).then(()=>{
         this.cargarClientes()
-        console.log(res.data)
 			}).catch((error) =>{
 				this.dialogerror = true
         this.errordetail = error
@@ -224,7 +222,12 @@ export default {
     getClientTransactions(id){
       this.clientRecords = false
       this.clientHasNoRecords = false
-      axios.get(process.env.VUE_APP_API_URLCLIENTS+id).then((res)=>{
+      if (id.length<8) {
+        this.dialogerror = true
+        this.errordetail = "Invalid id client"
+        
+      }
+      axios.get(process.env.VUE_APP_API_URLCLIENTS,{params:{id:id}}).then((res)=>{
         
         this.clientRecords = true
         this.Tdata = res.data["owner"]
@@ -236,14 +239,11 @@ export default {
         this.clientRecords = false
         this.clientHasNoRecords = true
         this.Tdata = null
-        console.log(error)
 				
 			});
 
     },
-    formatCurrency (value) {
-    return '$' + value / 100
-},
+    
   },
   mounted(){
     this.cargarClientes()    
